@@ -1,0 +1,143 @@
+/* input general styles  */
+input + span{
+  padding: 0.4rem;
+  border-radius: 10px;
+}
+
+input:checked + span{
+  background-color: var(--success-color);
+}
+
+input{
+  border: 1px solid var(--secondary-color);
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 0.5rem 0.3rem;
+  transition: all 0.3s ease-in-out;
+}
+
+input:read-only{
+  border-color: transparent;
+  border-width: 1px;
+  pointer-events: none;
+  cursor: default;
+}
+
+/* header */
+
+#save-edit-btn:disabled{
+  opacity: 0;
+  cursor: default;
+}
+
+#save-edit-btn{
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  opacity: 1;
+}
+
+.quiz-list{
+  overflow: hidden;
+}
+
+/* card list -> new question card */
+#new-question_input_card{
+  height: 0;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+  transform: translateX(-100%);
+}
+
+.new-question_span-wrapper{
+  margin: 0.5rem 0;
+}
+
+/* card top */
+.question-title{
+  font-size: var(--h4-font-size);
+  font-weight: var(--h4-font-weight);
+  margin: 0.6rem 0;
+}
+
+.card-top .card-details{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.select-question-btn{
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.select-question-btn:disabled{
+  cursor: default;
+}
+
+.select-question-btn.selected{
+  background-color: var(--success-color);
+}
+
+.question-answers{
+  font-size: 1rem
+}
+
+.select-answers{
+  border: 1px solid var(--secondary-color);
+  padding: 0.6rem;
+  
+  transition: all 0.2s ease-in-out;
+  border-color: transparent;
+}
+
+.select-answers.edit-mode{
+  border-color: var(--secondary-color);
+  border-radius: 10px;
+}
+
+
+/* card bottom */
+
+.card-bottom{
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.span-wrapper{
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.2s ease-in-out;
+  /* column-gap: 0.5rem; */
+}
+
+.delete-answer,
+.add-answer{
+  display: inline-block;
+  font-size: 1rem;
+  background-color: var(--primary-color);
+  color:#fff;
+  border-radius: 50%;
+  padding: 0.2rem 0.5rem;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  margin: 0 0.5rem;
+}
+
+.delete-answer{
+  transform: translateX(10px);
+}
+
+.delete-answer:hover
+.add-answer:hover{
+  background-color: var(--secondary-color);
+  color: var(--color-text-dark);
+  transform: scale(1.1);
+}
+
+.edit-on{
+  opacity: 1;
+  transform: translateX(0);
+}

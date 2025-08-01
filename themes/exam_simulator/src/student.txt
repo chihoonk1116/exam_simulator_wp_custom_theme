@@ -1,0 +1,212 @@
+<?php
+// consider attach custom field to student user
+$studentId = (string) get_current_user_id();
+
+$allAssignedExams = new WP_Query([
+  'posts_per_page' => -1,
+  'post_type' => 'assigned_exam',
+  'meta_query' => [
+    [
+      'key' => 'student_id',
+      'value' => $studentId,
+      'compare' => '='
+    ]
+  ]
+]);
+
+$assignedExamsArray = null;
+$completedExamsArray = null;
+$otherExamsArray = null;
+
+while($allAssignedExams->have_posts()){
+  $allAssignedExams->the_post();
+
+  $date = get_field('complete_by', get_the_ID());
+  $status = get_field('status', get_the_ID());
+
+  if($stutus === 'assigned'){
+    $givenDate = new DateTime($date);
+    $now = new DateTime('now');
+    if($givenDate < $now){
+      update_field('status', 'missing', get_the_ID());
+      $otherExamsArray[] = get_the_ID();
+    }
+    else{
+      $assignedExamsArray[] = get_the_ID();
+    }
+  }
+  else if($status === 'completed'){
+    $completedExamsArray[] = get_the_ID();
+  }
+  else{
+    $otherExamsArray[] = get_the_ID();
+  }
+}
+wp_reset_postdata();
+
+$assignedExams = new WP_Query([
+  'posts_per_page' => -1,
+  'post_type' => 'assigned_exam',
+  'meta_query' => [
+    [
+      'key' => 'student_id',
+      'value' => $studentId,
+      'compare' => '='
+    ],
+    [
+      'key' => 'status',
+      'value' => 'assigned',
+      'compare' => '='
+    ]
+  ]
+]);
+
+$completedAssignedExams = new WP_Query([
+  'posts_per_page' => -1,
+  'post_type' => 'assigned_exam',
+  'meta_query' => [
+    [
+      'key' => 'student_id',
+      'value' => $studentId,
+      'compare' => '='
+    ],
+    [
+      'key' => 'status',
+      'value' => 'completed',
+      'compare' => '='
+    ]
+  ]
+]);
+
+$otherAssignedExams = new WP_Query([
+  'posts_per_page' => -1,
+  'post_type' => 'assigned_exam',
+  'meta_query' => [
+    'relation' => 'AND',
+    [
+      'key' => 'student_id',
+      'value' => $studentId,
+      'compare' => '='
+    ],
+    [
+      'key' => 'status',
+      'value' => ['completed', 'assigned'],
+      'compare' => 'NOT IN'
+    ]
+  ]
+]);
+
+
+         
+function getDurationExp($examPost){
+
+  $duration = get_field('duration', $examPost->ID); 
+  if(!isset($duration)) return 'unlimited';
+  
+  if(is_string($duration)){
+    $duration = json_decode($duration, 1);
+  }
+  
+  $durationExp = 'unlimited';
+
+  if($duration['hour'] === '00' && $duration['minute'] === '00'){
+    return $durationExp;
+  }else{
+    $durationExp = $duration['hour'] . 'h ' . $duration['minute'] . 'mins'; 
+  }
+  return $durationExp;
+}
+
+get_template_part('layout/header');
+?>
+
+<section style="poistion:relative" class="dashboard-student" data-userid="<?php echo $studentId; ?>">
+  <div class="container container-common-flex">
+    <div class="dashboard-student_info container-left">
+      <h2>Overview</h2>
+      <div class="flex-center">
+        <p class="general-info">Completed Exams: <?php echo $completedAssignedExams->found_posts; ?></p>
+        <p class="general-info">Exams to Take: <?php echo $assignedExams->found_posts; ?></p>
+        <p class="general-info">Canceled Or Missing: <?php echo $otherAssignedExams->found_posts; ?></p>
+      </div>
+      <div class="dashboard-student_info-card cards">
+        <h2>Completed Exams</h2>
+        <?php while($completedAssignedExams->have_posts()):
+          $completedAssignedExams->the_post();
+          $score = get_field('score', get_the_ID());
+          $completedAt = explode(' ', get_field('completed_at', get_the_ID()));
+          $examName = get_field('exam_id', get_the_ID())[0]->post_title;
+        ?>
+        <div class="dashboard-inst_exams_cards-card card">
+          <div class="dashboard-inst_exams_cards-card-top card-top-details ">
+            <h5 style="margin: var(--spacing-sm) 0;"><?php echo $examName; ?></h5>
+            <div class="card-details">
+              <p>Score: <?php echo $score; ?></p>
+              <p>Date: <?php echo $completedAt[0]; ?> </p>
+            </div>
+          </div>
+          <div class="dashboard-inst_exams_cards-card-bottom card-bottom">
+            <a href="<?php the_permalink();?>" class="primary-btn">Exam Details</a>
+          </div>
+        </div>
+        <?php endwhile; wp_reset_postdata();?>
+      </div>
+    </div>
+    
+    <div class="dashboard-inst_exams container-right">
+      <h2>Exam List</h2>
+      <div class="dashboard-inst_exams_cards cards">
+        <?php while($assignedExams->have_posts()):
+          $assignedExams->the_post();
+
+          $completeBy = explode(' ', get_field('complete_by', get_the_ID()))[0];
+          if($completeBy === '9999-12-31'){
+            $completeBy = 'No Due Date';
+          }
+          $assignedBy = get_user_by('ID', (int) get_field('assigned_by', get_the_ID()));
+
+          $examPost = get_field('exam_id', get_the_ID())[0];
+
+          $examName = $examPost->post_title;
+          $examDuration = getDurationExp($examPost);
+          
+          $examQuestions = get_field('related_questions', $examPost->ID);
+          $examNumOfQuestions = isset($examQuestions) ? count($examQuestions) : 0;
+        ?>
+        <div class="dashboard-inst_exams_cards-card card">
+          <div class="dashboard-inst_exams_cards-card-top card-top-details ">
+            <h5 style="margin: var(--spacing-sm) 0;"><?php echo $examName; ?></h5>
+            <div class="card-details">
+              <p>Total Quetions: <?php echo $examNumOfQuestions;?></p>
+              <p>Duration: <?php echo $examDuration; ?></p>
+              <p>Due Date: <?php echo $completeBy; ?></p>
+              <p>Assigned By: <?php echo $assignedBy->display_name; ?></p>
+            </div>
+          </div>
+          <div class="dashboard-inst_exams_cards-card-bottom card-bottom">
+            <a href="<?php the_permalink();?>" class="primary-btn">Take Exam</a>
+          </div>
+        </div>
+        <?php endwhile; wp_reset_postdata();?>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Other Exams</h2>
+    <div class="dashboard-inst_exams_cards cards">
+      <?php while($otherAssignedExams->have_posts()):
+        $otherAssignedExams->the_post();
+        
+      ?>
+      
+      <?php endwhile; wp_reset_postdata();?>
+    </div>
+  </div>
+  
+</section>
+
+<?php
+ get_template_part('layout/footer');
+        
+?>
