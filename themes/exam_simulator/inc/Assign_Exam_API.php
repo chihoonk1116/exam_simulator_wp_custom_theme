@@ -39,8 +39,6 @@ class Assign_Exam_API {
             'methods' => 'POST',
             'callback' => [$this, 'deleteExamFromArchive'],
         ]);
-
-         
     }
 
     public function create_assign_post(WP_REST_Request $req) {

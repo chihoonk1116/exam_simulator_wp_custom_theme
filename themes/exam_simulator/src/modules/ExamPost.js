@@ -1,3 +1,5 @@
+import { showAlert } from "./Alert"
+
 class ExamPost{
   constructor(){
     if(!document.querySelector('.exam-post')) return
@@ -55,6 +57,13 @@ class ExamPost{
 
   // add question
   addQuestionToExam(){
+
+    if(!this.examId || !this.selectedQuizId || this.examId === '' || this.selectedQuizId.length === 0){
+      showAlert('Select questions to add')
+      return
+    }
+
+    document.getElementById('spinner-container').classList.remove('hidden')
     fetch(simulatorData.root_url + '/wp-json/custom/v1/add-question', {
       method: "POST",
       headers: {
@@ -70,12 +79,18 @@ class ExamPost{
       location.reload()
     })
     .catch((err) => {
-      console.log(err)
+      showAlert(err)
     })
   }
 
   // remove question
   removeQuestionFromExam(){
+    if(!this.examId || !this.selectedQuizId || this.examId === '' || this.selectedQuizId.length === 0){
+      showAlert('Select questions to remove')
+      return
+    }
+
+    document.getElementById('spinner-container').classList.remove('hidden')
     fetch(simulatorData.root_url + '/wp-json/custom/v1/remove-question', {
       method: "POST",
       headers: {
@@ -91,13 +106,19 @@ class ExamPost{
       location.reload()
     })
     .catch((err) => {
-      console.log(err)
+      showAlert(err)
     })
   }
 
   removeTheQuestion(btn){
     const qid = btn.dataset.qid
-    console.log(qid)
+    
+    if(!this.examId || !qid || this.examId === '' || qid === ''){
+      showAlert('Select question to delete')
+      return
+    }
+
+    document.getElementById('spinner-container').classList.remove('hidden')
 
     fetch(simulatorData.root_url + '/wp-json/custom/v1/remove-question', {
       method: "POST",
@@ -114,7 +135,7 @@ class ExamPost{
       location.reload()
     })
     .catch((err) => {
-      console.log(err)
+      showAlert(err)
     })
 
   }
@@ -124,6 +145,13 @@ class ExamPost{
     const title = document.getElementById('exam-edit-title').value
     const hours = document.getElementById('duration-hour').value
     const mins = document.getElementById('duration-mins').value
+
+    if(!title || !hours || !mins || title === ''){
+      showAlert('Write the exam title')
+      return
+    }
+
+    document.getElementById('spinner-container').classList.remove('hidden')
 
     fetch(simulatorData.root_url + '/wp-json/custom/v1/edit-exam-info', {
       method: 'POST',
@@ -140,10 +168,8 @@ class ExamPost{
       location.reload()
     })
     .catch((err) => {
-      console.log(err)
+      showAlert(err)
     })
-    
-  
   }
 
 }

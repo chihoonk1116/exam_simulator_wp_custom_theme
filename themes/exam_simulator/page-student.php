@@ -1,5 +1,10 @@
 <?php
-// consider attach custom field to student user
+
+if(in_array('instructor', wp_get_current_user()->roles)){
+  wp_redirect(home_url('/instructor'));
+  exit;
+}
+
 $studentId = (string) get_current_user_id();
 
 $allAssignedExams = new WP_Query([

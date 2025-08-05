@@ -216,7 +216,60 @@
 
 }
 
-    
+
+@media (max-width:992px){
+    /* left & right container */
+    .dashboard-student .container-common-flex,
+    .dashboard-inst .container-common-flex{
+        flex-direction: column-reverse;
+    }
+   
+}    
+
+@media (max-width: 768px){
+     /* overlay window */
+    .manage-exam-overlay .container,
+    .create-exam-window .container{
+        max-width: 90vw;
+        box-sizing: border-box;
+        padding: 0 1rem 1rem 1rem;
+    }
+}
+
+@media (max-width:576px ){
+    .container-right .flex-between:first-of-type{
+        flex-direction: column;
+        
+    }
+
+    .container-right .flex-between:first-of-type h2{
+        margin: 0.5rem 0;
+    }
+
+    .archive-exam-list{
+        margin: 0.5rem 0;
+    }
+
+    /* overlay window */
+
+    .manage-exam-overlay .selected-items_wrapper.flex-between{
+        
+        flex-direction: column;
+        row-gap: 1rem;
+    }
+
+    .btns-row{
+        row-gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+}
+
+@media (max-width:400px) {
+    .dashboard-student .other-exam_container .card{
+        width: 100%;
+    }
+}
 
 
 

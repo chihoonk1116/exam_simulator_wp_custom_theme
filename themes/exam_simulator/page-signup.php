@@ -3,10 +3,11 @@
 if(isset($_POST['submit-registration'])){
     $allowed_roles = ['student', 'instructor'];
 
+
     $username = sanitize_user($_POST['user-id']);
-    $password = $_POST['user-password'];
+    $password = sanitize_text_field($_POST['user-password']);
     $email = $username . '@dummymail.com';
-    $role = ($_POST['role'] ?? "");
+    $role = $_POST['role'] ?? "";
 
     $errors = new WP_Error();
 
@@ -84,14 +85,14 @@ if(isset($_POST['submit-registration'])){
                     <?php 
                     if(isset($errors) && !empty($errors->get_error_codes())){
                         foreach($errors->get_error_messages() as $error){
-                            echo '<span>' . $error . '</span><br/>';
+                            echo '<span class="fail_message">' . $error . '</span><br/>';
                         }
                     }else if(isset($user_id)){
                         if(is_wp_error($user_id)){
                             echo "Fails to sign in:server error...";
                         }
                         else{
-                            echo "Success to sign in, please log in";
+                            echo '<span class="success_message">Success to sign in, please log in</span>';
                         }
                     }
                     ?>

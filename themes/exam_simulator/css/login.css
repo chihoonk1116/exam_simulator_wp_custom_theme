@@ -4,7 +4,7 @@ main{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: var(--main-background-color);
+    background-color: transparent;
 }
 
 .login-container{
@@ -14,15 +14,15 @@ main{
     flex-direction: column;
     justify-content: flex-start;
     row-gap: var(--spacing-sm);
-    background-color: white;
     border-radius: 5px;
+    background-color: var(--secondary-color);
     box-sizing: border-box;
     overflow: hidden;
     padding-bottom: var(--spacing-md);
 }
 
 .login-heading{
-    background-color: var(--main-heading-color);
+    background-color: var(--heading-color);
     padding: var(--spacing-md) 0;
 }
 
@@ -49,7 +49,11 @@ form{
     align-items: center;
     width: 80%;
     height: 50px;
-    border: 1px solid var(--color-grey);
+    border: 1px solid var(--border-color);
+}
+
+.input-wrapper:last-of-type{
+    border: none;
 }
 
 svg{
@@ -57,10 +61,10 @@ svg{
     padding: 10px;
     height: 100%;
     box-sizing: border-box;
-    background-color: var(--main-heading-color);
+    background-color: var(--heading-color);
 }
 
-input{
+.input-wrapper input{
     font-size: 1.2rem;
     height: 100%;
     width: 100%;
@@ -71,17 +75,20 @@ input{
     transition: all 0.3s ease;
 }
 
-input:focus{
-    border: 1px solid var(--main-background-color);
-    box-shadow: 0 0 5px var(--main-background-color);
+.input-wrapper input:focus{
+    border: 1px solid var(--background-color-light);
+    box-shadow: 0 0 5px var(--background-color-light);
 }
 
-input::placeholder{
+.input-wrapper input::placeholder{
     opacity: 0.7;
     font-weight: 400;
     font-size: 1rem;
 }
 
+
+
+/* signup role button */
 .input-wrapper.role-wrapper{
     border: 0;
 }
@@ -96,7 +103,7 @@ input::placeholder{
     justify-content: center;
     align-items: center;
     width: 100%;
-    border: 1px solid var(--color-grey);
+    background-color: var(--secondary-color);
 }
 
 input[type="radio"]{
@@ -104,7 +111,9 @@ input[type="radio"]{
 }
 
 input[type="radio"]:checked + .radio-label{
-    background-color: var(--main-heading-color);
+    background-color: var(--heading-color);
+    color: #FFF;
+    
 }
 
 .radio-label{
@@ -115,19 +124,22 @@ input[type="radio"]:checked + .radio-label{
     padding: 10px 0;
 }
 
+/* footer : login and signup buttons*/
+
+.login-footer a,
 input[type="submit"]{
-    background-color: var(--main-heading-color);
+    background-color: #FFF;
     height: 100%;
-    color: white;
+    color: var(--text-color-dark);
     font-weight: 600;
     transition: all 0.3 ease;
     cursor: pointer;
 }
 
+.login-footer a:hover,
 input[type="submit"]:hover{
-    background-color: white;
-    color: var(--main-heading-color);
-    border: 1px solid var(--main-heading-color);
+    background-color: var(--heading-color);
+    color: #FFF;
 }
 
 .login-alert{
@@ -144,11 +156,39 @@ input[type="submit"]:hover{
     row-gap: 5px;
 }
 
-.login-footer a{
-    color: var(--main-background-color);
+.login-footer .success_message{
+    color: var(--correct-color);
 }
 
 .login-footer a{
-    color: var(--main-heading-color);
+    color: var();
 }
+
+
+
+
+@media (max-width:576px){
+
+    .login-container{
+        width: 100%;
+    }
+
+    .input-wrapper{
+        height: 40px;
+    }
+
+    .input-wrapper input{
+        font-size: 0.9rem;
+    }
+
+    a{
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width:390px) {
+    
+}
+
+
 

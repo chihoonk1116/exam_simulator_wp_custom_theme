@@ -1,6 +1,13 @@
+import { showAlert } from "./Alert"
+
 class QuestionArchive{
 
   constructor(){
+
+    if(!document.getElementById('question-archive')){
+      return
+    }
+
     // edit mode
     this.editModeBtn = document.getElementById('onedit-question-btn')
     this.saveEditBtn = document.getElementById('save-edit-btn')
@@ -73,10 +80,14 @@ class QuestionArchive{
       })
 
       if(this.deleteModeBtn.innerText === 'DELETE MODE'){
+        this.createQuestionBtn.classList.add('hidden')
+        this.editModeBtn.classList.add('hidden')
         this.saveEditBtn.innerText = 'confirm delete'
         this.deleteModeBtn.innerText = 'cancel'
       }
       else{
+        this.createQuestionBtn.classList.remove('hidden')
+        this.editModeBtn.classList.remove('hidden')
         this.deleteModeBtn.innerText = 'delete mode'
         this.saveEditBtn.innerText = 'save'
       }
@@ -95,6 +106,8 @@ class QuestionArchive{
 
     this.createQuestionBtn.addEventListener('click', () => {
       if(this.createQuestionBtn.innerText === 'CREATE QUESTION'){
+        this.deleteModeBtn.classList.add('hidden')
+        this.editModeBtn.classList.add('hidden')
         this.createQuestionBtn.innerText = 'cancel'
         this.newQuestionInputCard.style.height = '200px'
         this.newQuestionInputCard.style.opacity = '1'
@@ -102,6 +115,8 @@ class QuestionArchive{
         this.isActiveNewQuestionCard = true
       }//cancel event
       else{
+        this.deleteModeBtn.classList.remove('hidden')
+        this.editModeBtn.classList.remove('hidden')
         this.createQuestionBtn.innerText = 'create question'
         this.newQuestionInputCard.style.height = '0px'
         this.newQuestionInputCard.style.opacity = '0'
@@ -118,10 +133,14 @@ class QuestionArchive{
   editMode(){
 
     if(this.editModeBtn.innerText === 'EDIT MODE'){
+      this.createQuestionBtn.classList.add('hidden')
+      this.deleteModeBtn.classList.add('hidden')
       this.editModeBtn.innerText = 'Cancel'
       this.saveEditBtn.disabled = false
     }
     else{ //click cancel event
+      this.createQuestionBtn.classList.remove('hidden')
+      this.deleteModeBtn.classList.remove('hidden')
       this.editModeBtn.innerText = 'Edit Mode'
       this.saveEditBtn.disabled = true
       document.querySelectorAll('.temp_created-input').forEach((el) => el.remove())
@@ -208,24 +227,39 @@ class QuestionArchive{
 
   }
 
-  
-
   createNewQuestion(){
     const title = this.newQuestionInputCard.querySelector('#new-question-title').value
     const correctAnswerInputs = this.newQuestionInputCard.querySelectorAll("input[type='checkbox']:checked")
     const answerOptionInputs = this.newQuestionInputCard.querySelectorAll(".answer-input-new")
 
+    if(!title || title === ''){
+      showAlert("Enter the title")
+      return
+    }
+
     const correctAnswers = []
     const answerOptions = []
-
-    correctAnswerInputs.forEach((input) => {
-      correctAnswers.push(input.value)
-    })
 
     answerOptionInputs.forEach((input) => {
       answerOptions.push(input.value)
     })
 
+    if(answerOptionInputs.length === 0){
+      showAlert("type answer options")
+      return
+    }
+
+    correctAnswerInputs.forEach((input) => {
+      correctAnswers.push(input.value)
+    })
+
+    if(correctAnswerInputs.length === 0){
+      alert("mark correct answer")
+      return
+    }
+
+
+    document.getElementById('spinner-container').classList.remove('hidden')
     fetch(simulatorData.root_url + '/wp-json/custom/v1/create-question', {
       method: "POST",
       headers: {
@@ -247,14 +281,21 @@ class QuestionArchive{
   }
 
   saveEdit(){
-
     const questionDataList = []
+    let isError = false
 
     this.editQuestionList.forEach((cardDiv, id) => {
       
       const title = cardDiv.querySelector(`.question-title`)
       const correctAnswer = cardDiv.querySelectorAll('input[type="checkbox"]')
       const options = cardDiv.querySelectorAll('.question-answers')
+
+      if(!title || title.value === '' || !correctAnswer || correctAnswer.length === 0
+        || !options || options.length === 0
+      ){
+        isError = true
+        return
+      }
 
       const questionData = {
         'qId': id,
@@ -276,6 +317,13 @@ class QuestionArchive{
       questionDataList.push(questionData)
     });
 
+    if(isError){
+        showAlert("Please fill out all of questions' title, correct answer, options")
+        return
+    }
+
+    document.getElementById('spinner-container').classList.remove('hidden')
+
     fetch(simulatorData.root_url + '/wp-json/custom/v1/edit-question', {
       method: "POST",
       headers: {
@@ -290,11 +338,16 @@ class QuestionArchive{
       location.reload()
     })
     .catch((err) => {
-      console.log(err)
+      showAlert(err)
     })
   }
 
   deleteHandler(){
+    if(!this.selectedQuestionToDelete || this.selectedQuestionToDelete.size === 0){
+      showAlert("Select questions to delete")
+      return
+    }
+    document.getElementById('spinner-container').classList.remove('hidden')
     fetch(simulatorData.root_url + '/wp-json/custom/v1/delete-question', {
       method: "POST",
       headers: {

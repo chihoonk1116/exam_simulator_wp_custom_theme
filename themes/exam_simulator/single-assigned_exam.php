@@ -157,10 +157,10 @@ get_template_part('layout/header');
     
     <div class="submit-wrapper">
       <?php if($examStatus !== 'completed'):?>
-      <p class="question-count">Answered: <span class="answered-question-count">0</span> / Total: <?php echo count($examQuestions)?></p>
-      <button class="primary-btn disabled" id="exam-submit">Submit</button>            
+        <p class="question-count">Answered: <span class="answered-question-count">0</span> / Total: <?php echo count($examQuestions)?></p>
+        <button class="primary-btn disabled" id="exam-submit">Submit</button>            
       <?php else: ?>
-      <a href="./student" class="primary-btn">To Dashboard</a>
+        <a href="./student" class="primary-btn">To Dashboard</a>
       <?php endif; ?>
     </div>
 

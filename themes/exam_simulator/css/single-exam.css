@@ -70,3 +70,36 @@
 .quiz-list .card .included_question{
     opacity: 0.4;
 }
+
+
+
+@media (max-width:992px){
+    .exam-heading.flex-between{
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #single-exam_section .container-common-flex{
+        flex-direction: column;
+    }
+
+    .container-right .float-container{
+        position: relative;
+        inset: 0;
+    }
+}
+
+@media (max-width:768px){
+    
+}
+
+@media (max-width:576px){
+  
+}
+
+
+@media (max-width: 400px){
+  .quiz-list-heading.flex-between{
+    flex-direction: column;
+  }
+}

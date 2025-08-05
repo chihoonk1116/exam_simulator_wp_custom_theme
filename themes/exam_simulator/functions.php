@@ -25,21 +25,58 @@ function add_custom_field_to_rest(){
 //front page redirect
 add_action('template_redirect', 'redirect_logged_in_users_from_frontpage');
 function redirect_logged_in_users_from_frontpage(){
-    if(is_front_page() && is_user_logged_in()){
-        $current_user = wp_get_current_user();
+    $current_page = $_SERVER['REQUEST_URI'];
 
-        if(in_array('student', $current_user->roles)){
-            wp_redirect(home_url('/student'));
+    if(is_user_logged_in()){
+
+        $roles = wp_get_current_user()->roles;
+
+        if(is_front_page()){
+            if(in_array('student', $roles)){
+                wp_redirect(home_url('/student'));
+            }
+            else if(in_array('instructor', $roles)){
+                wp_redirect(home_url('instructor'));
+            }
+            exit;
         }
-        else if(in_array('instructor', $current_user->roles)){
-            wp_redirect(home_url('instructor'));
-        }
-        else{
+        if(in_array('student', $roles)){
+            if(is_singular('exam') || is_singular('question') || is_post_type_archive('question')){
+                wp_redirect(home_url('student'));
+                exit;
+            }
+    }
+    }else{
+
+        if(is_front_page()){
             wp_redirect(home_url('/login'));
         }
+        if(!strpos($current_page, 'login') && !strpos($current_page, 'signup')){
+            wp_redirect(home_url('/login'));
+            exit;
+        }
+        
+    }
+}
+
+// login page redirection
+add_action('init', 'redirect_login');
+add_action('wp_logout', 'redirect_logout');
+
+function redirect_login(){
+    $request_uri = $_SERVER['REQUEST_URI'];
+    if(strpos($request_uri, 'wp-login.php') && $_SERVER['REQUEST_METHOD'] === 'GET'){
+        wp_redirect(home_url('/login'));
         exit;
     }
-   
+    else if(strpos($request_uri, 'wp-signup.php') && $_SERVER['REQUEST_METHOD'] === 'GET'){
+        wp_redirect(home_url('/sign-up'));
+        exit;
+    }
+}
+function redirect_logout(){
+    wp_redirect(home_url('/login?logged_out=true'));
+    exit;
 }
 
 //custom role
@@ -52,27 +89,32 @@ function add_custom_user_roles(){
     add_role('instructor', 'Instructor', [
         'read' => true,
         'edit_posts' => true,
+        'publish_posts' => true
     ]);
-}
 
-// login page redirection
-add_action('init', 'redirect_login');
-add_action('wp_logout', 'redirect_logout');
-
-function redirect_login(){
-    $request_uri = $_SERVER['REQUEST_URI'];
-    if(strpos($request_uri, 'wp-login.php') !== false && $_SERVER['REQUEST_METHOD'] === 'GET'){
-        wp_redirect(home_url('/login'));
-        exit;
-    }
-    else if(strpos($request_uri, 'wp-signup.php') !== false && $_SERVER['REQUEST_METHOD'] === 'GET'){
-        wp_redirect(home_url('/sign-up'));
-        exit;
+    $role = get_role('instructor');
+    if ($role) {
+        $role->add_cap('publish_posts');
     }
 }
-function redirect_logout(){
-    wp_redirect(home_url('/login?logged_out=true'));
-    exit;
+
+
+
+
+//hide admin bar
+add_action('show_admin_bar', 'hide_admin_bar');
+function hide_admin_bar(){
+    if(!is_user_logged_in()){
+        return false;
+    }
+
+    $roles = wp_get_current_user()->roles;
+
+    if(!in_array('administrator', $roles)){
+        return false;
+    }
+
+    return true;
 }
 
 //load assetss
@@ -108,12 +150,12 @@ function load_assets(){
     }
 }
 
-add_action('init', 'session_on');
-function session_on(){
-    if(!session_id()){
-        session_start();
-    }
-}
+// add_action('init', 'session_on');
+// function session_on(){
+//     if(!session_id()){
+//         session_start();
+//     }
+// }
 
 function get_filtered_blocks($post_id, $block_name){
     $content = get_post_field('post_content', $post_id);

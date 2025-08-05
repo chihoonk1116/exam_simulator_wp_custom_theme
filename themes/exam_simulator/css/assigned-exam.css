@@ -81,6 +81,7 @@
 
 .quiz-card .card-details{
   padding: 1rem 1.5rem 0rem 1.5rem;
+  box-sizing: border-box;
 }
 
 .submit-wrapper{
@@ -110,4 +111,84 @@ input[type="checkbox"]:checked + span,
 input[type="radio"]:checked + span{
   background-color: var(--text-color-dark);
   color: white;
+}
+
+
+
+
+@media (max-width:992px){
+    
+}
+
+@media (max-width:768px){
+    input{
+      padding: 0.8rem;
+    }
+}
+
+@media (max-width:576px){
+  input{
+    padding: 0.5rem;
+  }
+
+  
+
+  .quiz-list-heading.flex-between{
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-top.flex-between{
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .card-top input:read-only{
+    text-align: center;
+  }
+
+  .card-top .card-details{
+    width: 100%;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width:992px){
+  
+}    
+
+@media (max-width: 768px){
+   .assigned-exam-post .exam-heading{
+    flex-direction: column;
+   }
+   .assigned-exam-post .exam-duration,
+   .assigned-exam-post .question-count{
+    padding: 0.5rem;
+    font-size: 0.7rem;
+   }
+
+   .quiz-card .card-details{
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.8rem;
+    padding: 0 1rem;
+    
+   }
+
+   
+}
+
+@media (max-width:576px ){
+   .quiz-card .card-details span{
+    width: 100%;
+    display: inline-block;
+   }
+}
+
+@media (max-width:400px) {
+    
 }

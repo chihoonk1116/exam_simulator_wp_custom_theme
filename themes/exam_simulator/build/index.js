@@ -2,6 +2,33 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/modules/Alert.js":
+/*!******************************!*\
+  !*** ./src/modules/Alert.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   closeAlert: () => (/* binding */ closeAlert),
+/* harmony export */   showAlert: () => (/* binding */ showAlert)
+/* harmony export */ });
+const showAlert = message => {
+  document.getElementById('alert-container').classList.add('show');
+  document.querySelector('.alert').classList.add('show');
+  const alertDiv = document.querySelector('.alert');
+  alertDiv.innerHTML = `<p> ${message} </p>`;
+  setTimeout(closeAlert, 3000);
+};
+const closeAlert = () => {
+  document.getElementById('alert-container').classList.remove('show');
+  document.querySelector('.alert').classList.remove('show');
+  const alertDiv = document.querySelector('.alert');
+  alertDiv.innerHTML = '';
+};
+
+/***/ }),
+
 /***/ "./src/modules/AssignedExam.js":
 /*!*************************************!*\
   !*** ./src/modules/AssignedExam.js ***!
@@ -12,6 +39,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _Alert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Alert */ "./src/modules/Alert.js");
+
 class AssignedExam {
   // progress animation, other exam showing animation
 
@@ -65,6 +94,15 @@ class AssignedExam {
   examSubmitHandler() {
     this.submitBtn.classList.add('disabled');
     clearInterval(this.timer);
+    if (this.responseMap.size !== this.totalQuestionsCount) {
+      this.quizOptionsDivEl.forEach((el, index) => {
+        const qid = el.dataset.qid;
+        if (!this.responseMap.has(qid)) {
+          this.responseMap.set(qid, ['0']);
+        }
+      });
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/submit-exam', {
       method: "POST",
       headers: {
@@ -77,9 +115,10 @@ class AssignedExam {
         assignedId: this.examId
       })
     }).then(res => res.json()).then(data => {
-      this.resultHandler(data.result, data.score);
+      window.location.reload();
+      // this.resultHandler(data.result, data.score)
     }).catch(err => {
-      console.log(err);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(err);
     });
   }
   optionClickHandler(divEl) {
@@ -130,6 +169,9 @@ class AssignedExam {
         this.examSubmitHandler();
       }
     }
+    if (this.hours < 0 && this.minutes < 10) {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("10 mins left");
+    }
     const formattedMinutes = String(this.minutes).padStart(2, '0');
     this.timeSpanEl.forEach(spanEl => {
       spanEl.innerText = String(this.hours) + 'h ' + formattedMinutes + 'm';
@@ -148,95 +190,6 @@ class AssignedExam {
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AssignedExam);
 
-// constructor(){
-//         this.examContainer = document.querySelector('.assigned-exam-container')
-//         if(this.examContainer){
-//             this.examStatus = this.examContainer.dataset.status
-//             this.examDuration = this.examContainer.dataset.duration.split(':')
-//         }
-
-//         if(this.examStatus === 'assigned'){
-//             this.allQuizBlocks = document.querySelectorAll('.quiz-answers')
-//             this.displayElement = document.getElementById('answered-count')
-//             this.answeredQuestions = new Set()
-//             this.answerCount = 0
-//             this.displayElement.textContent = `0 / ${this.allQuizBlocks.length}`
-
-//             if(this.examDuration){
-//                 this.hours = parseInt(this.examDuration[0])
-//                 this.minutes = parseInt(this.examDuration[1])
-//             }
-//             this.timer = null
-//             this.timeDisplay = document.getElementById('timer')
-
-//             this.examSubmitBtn = document.getElementById('exam-submit')
-//             this.initTimer()
-//             this.events()
-//         }
-//     }
-
-//     events(){
-
-//         this.allQuizBlocks.forEach(block => {
-//             const inputs = block.querySelectorAll('input[type="checkbox"], input[type="radio"]')
-//             if(inputs.length === 0) return
-
-//             const nameAttr = inputs[0].getAttribute('name')
-//             const questionId = nameAttr.replace(/\[\]$/, '')
-
-//             inputs.forEach(input => {
-//                 input.addEventListener('change', () => this.updateAnswerStatus(block, questionId))
-//             })
-//         })
-
-//     }
-
-//     updateAnswerStatus(block, questionId){
-
-//         const checkedInputs = block.querySelectorAll('input:checked')
-//         const isAnswers = checkedInputs.length > 0
-
-//         if(isAnswers > 0 && !this.answeredQuestions.has(questionId)){
-//             this.answeredQuestions.add(questionId)
-//             this.answerCount++
-//         }
-//         else if(!isAnswers && this.answeredQuestions.has(questionId)){
-//             this.answeredQuestions.delete(questionId)
-//             this.answerCount--
-//         }
-
-//         this.displayElement.textContent = `${this.answerCount} / ${this.allQuizBlocks.length}`
-
-//     }
-
-//     initTimer(){
-
-//         if(this.hours === 0 && this.minutes === 0){
-//             this.timeDisplay.textContent = 'Click submit button when you finish the exam'
-//         }else{
-//             this.timeDisplay.textContent = this.hours + 'h ' + this.minutes + ' min left'
-//             this.timer = setInterval(this.updateTimer.bind(this), 100);
-//         }
-//     }
-
-//     updateTimer(){
-
-//         this.minutes--
-
-//         if(this.hours === 0 && this.minutes === 0){
-//             this.examSubmitBtn.click()
-//             clearInterval(this.timer)
-//         }else if(this.minutes === 0){
-//             this.minutes = 59
-//             this.hours--
-//         }
-
-//         const formattedMinutes = String(this.minutes).padStart(2, '0')
-//         const formattedHours = String(this.hours).padStart(2,'0')
-
-//         this.timeDisplay.textContent = `${formattedHours} h ${formattedMinutes}min left`
-//     }
-
 /***/ }),
 
 /***/ "./src/modules/Dashboard.js":
@@ -249,7 +202,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-// get due value, improve response
+/* harmony import */ var _Alert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Alert */ "./src/modules/Alert.js");
 
 class Dashboard {
   constructor() {
@@ -387,9 +340,10 @@ class Dashboard {
   }
   createAssignPost() {
     if (this.studentIds.size === 0 || this.examIds.size === 0) {
-      console.log("Please select student or exam");
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("Please select student or exam");
       return;
     }
+    document.getElementById('spinner-container').classList.remove('hidden');
     let completeByDate = this.dueDateInput.value;
     const isNoDue = this.isNoDueDate.checked;
     if (isNoDue) {
@@ -411,17 +365,17 @@ class Dashboard {
         completeByTime: ""
       })
     }).then(res => {
-      // add spinner and alert, improve ux
       location.reload();
     }).catch(error => {
-      console.log('error', error);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(error);
     });
   }
   deleteAssignPost() {
     if (this.studentIds.size === 0 || this.examIds.size === 0) {
-      console.log("Please select student or exam");
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("Select students and exams");
       return;
     }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/delete-assign-post', {
       method: 'POST',
       headers: {
@@ -435,16 +389,20 @@ class Dashboard {
     }).then(res => {
       location.reload();
     }).catch(err => {
-      console.log(err);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(err);
     });
   }
   editDueDate() {
     if (this.studentIds.size === 0 || this.examIds.size === 0) {
-      console.log("Please select student or exam");
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("select students or exams");
       return;
     }
     let completeByDate = this.dueDateInput.value;
     const isNoDue = this.isNoDueDate.checked;
+    if (!completeByDate || !isNoDue) {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("Choose due date...");
+      return;
+    }
     if (isNoDue) {
       completeByDate = '9999-12-31';
     }
@@ -462,11 +420,16 @@ class Dashboard {
     }).then(res => {
       console.log(res);
     }).catch(err => {
-      console.log(err);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(err);
     });
   }
   createNewExam() {
     const examTitle = document.getElementById('exam-title').value;
+    if (!examTitle || examTitle === '') {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("Type exam title");
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/wp/v2/exam', {
       method: 'POST',
       headers: {
@@ -480,10 +443,15 @@ class Dashboard {
     }).then(res => {
       location.reload();
     }).catch(err => {
-      console.log(err);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(err);
     });
   }
   examToArchive() {
+    if (this.examIds.size === 0) {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("Choose exam");
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/exam-to-archive', {
       method: 'POST',
       headers: {
@@ -496,11 +464,16 @@ class Dashboard {
     }).then(res => {
       location.reload();
     }).catch(err => {
-      console.log(err);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(err);
     });
   }
   activeExam() {
     const deactiveExamId = this.selectArchiveExamEl.value;
+    if (!deactiveExamId || deactiveExamId === '') {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("Choose exam");
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/active-exam-from-archive', {
       method: 'POST',
       headers: {
@@ -518,6 +491,11 @@ class Dashboard {
   }
   deleteArchivedExam() {
     const deactiveExamId = this.selectArchiveExamEl.value;
+    if (!deactiveExamId || deactiveExamId === '') {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("Choose exam");
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/delete-exam-from-archive', {
       method: 'POST',
       headers: {
@@ -548,6 +526,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _Alert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Alert */ "./src/modules/Alert.js");
+
 class ExamPost {
   constructor() {
     if (!document.querySelector('.exam-post')) return;
@@ -591,6 +571,11 @@ class ExamPost {
 
   // add question
   addQuestionToExam() {
+    if (!this.examId || !this.selectedQuizId || this.examId === '' || this.selectedQuizId.length === 0) {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)('Select questions to add');
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/add-question', {
       method: "POST",
       headers: {
@@ -604,12 +589,17 @@ class ExamPost {
     }).then(res => {
       location.reload();
     }).catch(err => {
-      console.log(err);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(err);
     });
   }
 
   // remove question
   removeQuestionFromExam() {
+    if (!this.examId || !this.selectedQuizId || this.examId === '' || this.selectedQuizId.length === 0) {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)('Select questions to remove');
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/remove-question', {
       method: "POST",
       headers: {
@@ -623,12 +613,16 @@ class ExamPost {
     }).then(res => {
       location.reload();
     }).catch(err => {
-      console.log(err);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(err);
     });
   }
   removeTheQuestion(btn) {
     const qid = btn.dataset.qid;
-    console.log(qid);
+    if (!this.examId || !qid || this.examId === '' || qid === '') {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)('Select question to delete');
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/remove-question', {
       method: "POST",
       headers: {
@@ -642,13 +636,18 @@ class ExamPost {
     }).then(res => {
       location.reload();
     }).catch(err => {
-      console.log(err);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(err);
     });
   }
   editExamSaveHandler() {
     const title = document.getElementById('exam-edit-title').value;
     const hours = document.getElementById('duration-hour').value;
     const mins = document.getElementById('duration-mins').value;
+    if (!title || !hours || !mins || title === '') {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)('Write the exam title');
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/edit-exam-info', {
       method: 'POST',
       headers: {
@@ -664,7 +663,7 @@ class ExamPost {
     }).then(res => {
       location.reload();
     }).catch(err => {
-      console.log(err);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(err);
     });
   }
 }
@@ -682,8 +681,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _Alert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Alert */ "./src/modules/Alert.js");
+
 class QuestionArchive {
   constructor() {
+    if (!document.getElementById('question-archive')) {
+      return;
+    }
+
     // edit mode
     this.editModeBtn = document.getElementById('onedit-question-btn');
     this.saveEditBtn = document.getElementById('save-edit-btn');
@@ -742,9 +747,13 @@ class QuestionArchive {
         }
       });
       if (this.deleteModeBtn.innerText === 'DELETE MODE') {
+        this.createQuestionBtn.classList.add('hidden');
+        this.editModeBtn.classList.add('hidden');
         this.saveEditBtn.innerText = 'confirm delete';
         this.deleteModeBtn.innerText = 'cancel';
       } else {
+        this.createQuestionBtn.classList.remove('hidden');
+        this.editModeBtn.classList.remove('hidden');
         this.deleteModeBtn.innerText = 'delete mode';
         this.saveEditBtn.innerText = 'save';
       }
@@ -760,6 +769,8 @@ class QuestionArchive {
 
     this.createQuestionBtn.addEventListener('click', () => {
       if (this.createQuestionBtn.innerText === 'CREATE QUESTION') {
+        this.deleteModeBtn.classList.add('hidden');
+        this.editModeBtn.classList.add('hidden');
         this.createQuestionBtn.innerText = 'cancel';
         this.newQuestionInputCard.style.height = '200px';
         this.newQuestionInputCard.style.opacity = '1';
@@ -767,6 +778,8 @@ class QuestionArchive {
         this.isActiveNewQuestionCard = true;
       } //cancel event
       else {
+        this.deleteModeBtn.classList.remove('hidden');
+        this.editModeBtn.classList.remove('hidden');
         this.createQuestionBtn.innerText = 'create question';
         this.newQuestionInputCard.style.height = '0px';
         this.newQuestionInputCard.style.opacity = '0';
@@ -778,10 +791,14 @@ class QuestionArchive {
   }
   editMode() {
     if (this.editModeBtn.innerText === 'EDIT MODE') {
+      this.createQuestionBtn.classList.add('hidden');
+      this.deleteModeBtn.classList.add('hidden');
       this.editModeBtn.innerText = 'Cancel';
       this.saveEditBtn.disabled = false;
     } else {
       //click cancel event
+      this.createQuestionBtn.classList.remove('hidden');
+      this.deleteModeBtn.classList.remove('hidden');
       this.editModeBtn.innerText = 'Edit Mode';
       this.saveEditBtn.disabled = true;
       document.querySelectorAll('.temp_created-input').forEach(el => el.remove());
@@ -847,14 +864,27 @@ class QuestionArchive {
     const title = this.newQuestionInputCard.querySelector('#new-question-title').value;
     const correctAnswerInputs = this.newQuestionInputCard.querySelectorAll("input[type='checkbox']:checked");
     const answerOptionInputs = this.newQuestionInputCard.querySelectorAll(".answer-input-new");
+    if (!title || title === '') {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("Enter the title");
+      return;
+    }
     const correctAnswers = [];
     const answerOptions = [];
-    correctAnswerInputs.forEach(input => {
-      correctAnswers.push(input.value);
-    });
     answerOptionInputs.forEach(input => {
       answerOptions.push(input.value);
     });
+    if (answerOptionInputs.length === 0) {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("type answer options");
+      return;
+    }
+    correctAnswerInputs.forEach(input => {
+      correctAnswers.push(input.value);
+    });
+    if (correctAnswerInputs.length === 0) {
+      alert("mark correct answer");
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/create-question', {
       method: "POST",
       headers: {
@@ -874,10 +904,15 @@ class QuestionArchive {
   }
   saveEdit() {
     const questionDataList = [];
+    let isError = false;
     this.editQuestionList.forEach((cardDiv, id) => {
       const title = cardDiv.querySelector(`.question-title`);
       const correctAnswer = cardDiv.querySelectorAll('input[type="checkbox"]');
       const options = cardDiv.querySelectorAll('.question-answers');
+      if (!title || title.value === '' || !correctAnswer || correctAnswer.length === 0 || !options || options.length === 0) {
+        isError = true;
+        return;
+      }
       const questionData = {
         'qId': id,
         'qTitle': title.value,
@@ -894,6 +929,11 @@ class QuestionArchive {
       });
       questionDataList.push(questionData);
     });
+    if (isError) {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("Please fill out all of questions' title, correct answer, options");
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/edit-question', {
       method: "POST",
       headers: {
@@ -906,10 +946,15 @@ class QuestionArchive {
     }).then(res => {
       location.reload();
     }).catch(err => {
-      console.log(err);
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)(err);
     });
   }
   deleteHandler() {
+    if (!this.selectedQuestionToDelete || this.selectedQuestionToDelete.size === 0) {
+      (0,_Alert__WEBPACK_IMPORTED_MODULE_0__.showAlert)("Select questions to delete");
+      return;
+    }
+    document.getElementById('spinner-container').classList.remove('hidden');
     fetch(simulatorData.root_url + '/wp-json/custom/v1/delete-question', {
       method: "POST",
       headers: {

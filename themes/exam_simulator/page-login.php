@@ -1,11 +1,11 @@
 <?php
     if(isset($_POST['login-submit'])){
-        $creds = array();
-        $creds['user_login'] = $_POST['user-id'];
-        $creds['user_password'] = $_POST['user-password'];
-        $creds['remember'] = true;
+        $userInfo = array();
+        $userInfo['user_login'] = sanitize_text_field($_POST['user-id']);
+        $userInfo['user_password'] = sanitize_text_field($_POST['user-password']);
+        $userInfo['remember'] = true;
 
-        $user = wp_signon($creds, false);
+        $user = wp_signon($userInfo, false);
 
         if(!is_wp_error($user)){
             

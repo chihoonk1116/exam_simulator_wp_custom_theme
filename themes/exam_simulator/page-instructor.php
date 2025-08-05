@@ -1,4 +1,10 @@
 <?php 
+
+if(in_array('student', wp_get_current_user()->roles)){
+  wp_redirect(home_url('/student'));
+  exit;
+}
+
 $instId = (string) get_current_user_id();
 function getAssignedExams($studentId){
     $assignedExams = new WP_Query([

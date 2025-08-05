@@ -14,7 +14,7 @@ get_template_part('layout/header');
 
 ?>
 
-<section style="position:relative" class="question-archive">
+<section style="position:relative" id="question-archive">
    <div class="container">
       <div class="flex-between quiz-list-heading">
         <h2>Quiz List</h2>
@@ -64,14 +64,14 @@ get_template_part('layout/header');
 
           $numOfAnswerOptions = count($answers);
         ?>
-        <div class="card" data-quiz-id="<?php echo the_ID();?>">
+        <div class="card" data-quiz-id="<?php echo esc_attr(the_ID());?>">
           <div class= "card-top flex-between">
             <input 
               readonly
               class="question-title" 
-              type="text" value="<?php the_title(); ?>"
-              name="question-title-<?php the_ID()?>"
-              id="question-title-<?php the_ID()?>"
+              type="text" value="<?php esc_attr(the_title()); ?>"
+              name="question-title-<?php esc_attr(the_ID())?>"
+              id="question-title-<?php esc_attr(the_ID())?>"
             >
             <div class="card-details">
               <div class="select-answers">
@@ -103,7 +103,7 @@ get_template_part('layout/header');
                 class="answer-input-<?php the_ID(); ?> question-answers" 
                 id="answer-input-<?php the_ID(); echo '-' . $index; ?>" 
                 type="text" 
-                value="<?php echo $answer;?>"
+                value="<?php echo esc_attr($answer);?>"
               >
           <?php 
             $index++;

@@ -31,7 +31,7 @@ get_template_part('layout/header');
 
 ?>
 
-<section style="position:relative" class="exam-post" data-exam-id="<?php echo the_ID();?>">
+<section id="single-exam_section" style="position:relative" class="exam-post" data-exam-id="<?php echo the_ID();?>">
    <div class="container container-common-flex">
       <div class="container-left">
          <div class="flex-between exam-heading">

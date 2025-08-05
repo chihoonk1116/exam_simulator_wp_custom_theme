@@ -141,3 +141,57 @@ input:read-only{
   opacity: 1;
   transform: translateX(0);
 }
+
+
+
+@media (max-width:992px){
+    
+}
+
+@media (max-width:768px){
+    input{
+      padding: 0.8rem;
+    }
+}
+
+@media (max-width:576px){
+  input{
+    padding: 0.5rem;
+  }
+
+  
+
+  .quiz-list-heading.flex-between{
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-top.flex-between{
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .card-top input:read-only{
+    text-align: center;
+  }
+
+  .card-top .card-details{
+    width: 100%;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+}
+
+
+@media (max-width: 400px){
+  .quiz-list-heading #btns{
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
+    row-gap: 0.3rem;
+  }
+}

@@ -1,4 +1,4 @@
-// get due value, improve response
+import { showAlert } from "./Alert"
 
 class Dashboard {
   constructor() {
@@ -180,10 +180,10 @@ class Dashboard {
   createAssignPost(){
 
     if(this.studentIds.size === 0 || this.examIds.size === 0){
-      console.log("Please select student or exam")
+      showAlert("Please select student or exam")
       return
     }
-    
+    document.getElementById('spinner-container').classList.remove('hidden')
     let completeByDate = this.dueDateInput.value
     const isNoDue = this.isNoDueDate.checked
 
@@ -207,20 +207,20 @@ class Dashboard {
       })
     })
     .then((res) => {
-      // add spinner and alert, improve ux
       location.reload();
     })
     .catch(error => {
-      console.log('error', error)
+      showAlert(error)
     })
   }
 
   deleteAssignPost(){
-
     if(this.studentIds.size === 0 || this.examIds.size === 0){
-      console.log("Please select student or exam")
+      showAlert("Select students and exams")
       return
     }
+
+    document.getElementById('spinner-container').classList.remove('hidden')
 
     fetch(simulatorData.root_url + '/wp-json/custom/v1/delete-assign-post', {
       method: 'POST',
@@ -237,19 +237,24 @@ class Dashboard {
       location.reload();
     })
     .catch((err) => {
-      console.log(err)
+      showAlert(err)
     })
   }
 
   editDueDate(){
 
     if(this.studentIds.size === 0 || this.examIds.size === 0){
-      console.log("Please select student or exam")
+      showAlert("select students or exams")
       return
     }
 
     let completeByDate = this.dueDateInput.value
     const isNoDue = this.isNoDueDate.checked
+
+    if(!completeByDate || !isNoDue ){
+      showAlert("Choose due date...")
+      return
+    }
 
     if(isNoDue){
       completeByDate = '9999-12-31'
@@ -271,14 +276,19 @@ class Dashboard {
       console.log(res)
     })
     .catch((err) => {
-      console.log(err)
+      showAlert(err)
     })
   }
 
   createNewExam(){
-    
     const examTitle = document.getElementById('exam-title').value
-    
+    if(!examTitle || examTitle === ''){
+      showAlert("Type exam title")
+      return;
+    }
+
+    document.getElementById('spinner-container').classList.remove('hidden')
+
     fetch(simulatorData.root_url + '/wp-json/wp/v2/exam', {
       method: 'POST',
       headers: {
@@ -294,12 +304,18 @@ class Dashboard {
       location.reload();
     })
     .catch((err) => {
-      console.log(err)
+      showAlert(err)
     })
-    
   }
 
   examToArchive(){
+
+    if(this.examIds.size === 0){
+      showAlert("Choose exam")
+      return
+    }
+
+    document.getElementById('spinner-container').classList.remove('hidden')
     fetch(simulatorData.root_url + '/wp-json/custom/v1/exam-to-archive', {
       method: 'POST',
       headers: {
@@ -314,13 +330,19 @@ class Dashboard {
       location.reload();
     })
     .catch((err) => {
-      console.log(err)
+      showAlert(err)
     })
   }
 
   activeExam(){
     const deactiveExamId = this.selectArchiveExamEl.value
 
+    if(!deactiveExamId || deactiveExamId === ''){
+      showAlert("Choose exam")
+      return
+    }
+
+    document.getElementById('spinner-container').classList.remove('hidden')
     fetch(simulatorData.root_url + '/wp-json/custom/v1/active-exam-from-archive', {
       method: 'POST',
       headers: {
@@ -342,6 +364,12 @@ class Dashboard {
   deleteArchivedExam(){
     const deactiveExamId = this.selectArchiveExamEl.value
 
+     if(!deactiveExamId || deactiveExamId === ''){
+      showAlert("Choose exam")
+      return
+    }
+
+    document.getElementById('spinner-container').classList.remove('hidden')
     fetch(simulatorData.root_url + '/wp-json/custom/v1/delete-exam-from-archive', {
       method: 'POST',
       headers: {
